@@ -5,7 +5,7 @@
 #include <iomanip>
 
 double func(double x) {
-    return std::log(x) * std::log(x) / x;
+     return std::log(x) * std::log(x) / x;
 }
 
 std::vector<double> find_c(int n, double h, const std::vector<double>& y) {
@@ -92,7 +92,7 @@ int main() {
         double x_star = x[0] + 0.5 * h * i;
         int j = i / 2;
         if (j == n) {
-            j = n - 1;
+             j = n - 1;
         }
         splines.push_back(a[j] + b[j] * (x_star - x[j]) + c[j] * (x_star - x[j]) * (x_star - x[j]) + d[j] * (x_star - x[j]) * (x_star - x[j]) * (x_star - x[j]));
     }
@@ -102,13 +102,16 @@ int main() {
 
     int j = 0;
     for (int i = 0; i < x_ext.size(); ++i) {
-        std::cout << std::fixed << std::setprecision(4) << x_ext[i] << " " << splines[i];
+        std::cout << std::fixed << std::setprecision(6) << x_ext[i] << "\t" << splines[i];
         if (i % 2 == 0) {
-            std::cout << std::fixed << std::setprecision(4) << "\t" << y[j] << "\t" << std::abs(splines[i] - y[j]) << "\t -- node";
+            // std::cout << std::fixed << std::setprecision(6) << "\t" << y[j] << "\t" << std::abs(splines[i] - y[j]) << "\t -- node";
+            std::cout << "\t" << func(x_ext[i]) << "\t" << std::abs(splines[i] - func(x_ext[i])) << "\t -- node";
             j++;
         }
         else {
-            std::cout << std::fixed << std::setprecision(4) << "\t" << func(x_ext[i]) << "\t" << std::abs(splines[i] - y[j]);
+            // std::cout << std::fixed << std::setprecision(6) << "\t" << func(x_ext[i]) << "\t" << std::abs(splines[i] - y[j]);
+            std::cout << "\t" << func(x_ext[i]) << "\t" << std::abs(splines[i] - func(x_ext[i]));
+
         }
         std::cout << std::endl;
     }

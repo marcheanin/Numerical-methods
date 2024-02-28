@@ -2,6 +2,7 @@ from decimal import Decimal, getcontext
 
 getcontext().prec = 20
 
+
 def show_vector(s):
     for i in range(0, len(s)):
         print(s[i], end=" ")
@@ -35,7 +36,7 @@ def check_conditions(a, b, c):
             flag = False
             break
 
-    if not (abs(b[0]) / abs(c[0]) >= 1 and abs(b[n-1]) / abs(c[n-2]) >= 1):
+    if not (abs(b[0]) / abs(c[0]) >= 1 and abs(b[n - 1]) / abs(c[n - 2]) >= 1):
         flag = False
 
     return flag

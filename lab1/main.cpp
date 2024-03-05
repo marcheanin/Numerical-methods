@@ -1,85 +1,43 @@
 #include <iostream>
 #include <vector>
-#include <tuple>
 
-std::vector<double> find_c(int n, double h, const std::vector<double>& y) {
-    std::vector<double> a(n, 1), c(n, 1), b(n, 4), d(n, 0);
-    c[n - 1] = 0;
-    a[0] = 0;
-    for (int i = 0; i < n; ++i) {
-        d[i] = 3 * (y[i + 2] - 2 * y[i + 1] + y[i]) / (h * h);
-    }
-    std::vector<double> alpha(n, 0), beta(n, 0);
-    alpha[0] = -c[0] / b[0];
-    beta[0] = d[0] / b[0];
-    for (int i = 1; i < n; ++i) {
-        alpha[i] = -c[i] / (alpha[i - 1] * a[i - 1] + b[i]);
-        beta[i] = (d[i] - a[i] * beta[i - 1]) / (alpha[i - 1] * a[i - 1] + b[i]);
-    }
-    std::vector<double> x(n, 0);
-    x[n - 1] = beta[n - 1];
-    for (int i = n - 2; i >= 0; --i) {
-        x[i] = alpha[i] * x[i + 1] + beta[i];
-    }
-    std::vector<double> result = {0};
-    result.insert(result.end(), x.begin(), x.end());
-    result.push_back(0);
-    return result;
-}
 
-std::tuple <std::vector<double>, std::vector<double>, std::vector<double> > find_a_b_d(int n, const std::vector<double>& c, const std::vector<double>& y, double h) {
-    std::vector<double> a(y.begin(), y.end() - 1), b(n, 0), d(n, 0);
-    for (int i = 0; i < n - 1; ++i) {
-        b[i] = (y[i + 1] - y[i]) / h - h * (c[i + 1] + 2 * c[i]) / 3;
-        d[i] = (c[i + 1] - c[i]) / (3 * h);
+class Solution {
+public:
+    static int compress(std::vector<char>& chars) {
+        std::vector <char> s;
+        for (int i = 0; i < chars.size(); i++) {
+            for (int j = i; j <= chars.size(); j++) {
+                if (j == chars.size() || chars[j] != chars[i]) {
+                    if (j - i == 1) {
+                        s.push_back(chars[i]);
+                    }
+                    else {
+                        s.push_back(chars[i]);
+                        std::vector <char> num;
+                        int col = j - i;
+                        while(col) {
+                            num.push_back((col % 10) + '0');
+                            col /= 10;
+                        }
+                        for (int k = num.size() - 1; k >= 0; k--) {
+                            s.push_back(num[k]);
+                        }
+                    }
+                    i = j - 1;
+                    break;
+                }
+            }
+        }
+        chars = s;
+        return chars.size();
     }
-    return {a, b, d};
-}
+};
 
 int main() {
-    int n = 8;
-    std::vector<double> x = {1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5};
-    std::vector<double> y = {3.33, 2.30, 1.60, 1.27, 1.18, 0.99, 1.41, 0.80, 1.12};
-    double h = (x[n] - x[0]) / n;
-    std::vector<double> c = find_c(n - 1, h, y);
-    auto res = find_a_b_d(n, c, y, h);
-    auto a = std::get<0>(res);
-    auto b = std::get<1>(res);
-    auto d = std::get<2>(res);
-    std::vector<double> x_ext;
-    std::vector<double> splines;
-    for (int i = 0; i < n; ++i) {
-        x_ext.push_back(x[i]);
-        x_ext.push_back((x[i] + x[i + 1]) / 2);
+    std::vector <char> s = {'a', 'a', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b'};
+    std::cout << Solution::compress(s) << std::endl;
+    for (auto letter : s) {
+        std::cout << letter << " ";
     }
-    x_ext.push_back(x[n]);
-    std::cout << "a: ";
-    for (const auto& val : a) std::cout << val << " ";
-    std::cout << std::endl;
-    std::cout << "b: ";
-    for (const auto& val : b) std::cout << val << " ";
-    std::cout << std::endl;
-    std::cout << "c: ";
-    for (const auto& val : c) std::cout << val << " ";
-    std::cout << std::endl;
-    std::cout << "d: ";
-    for (const auto& val : d) std::cout << val << " ";
-    std::cout << std::endl;
-    for (int i = 0; i < x_ext.size(); ++i) {
-        double x_star = x[0] + 0.5 * h * i;
-        int j = i / 2;
-        if (j == n) {
-            j = n - 1;
-        }
-        splines.push_back(a[j] + b[j] * (x_star - x[j]) + c[j] * (x_star - x[j]) * (x_star - x[j]) + d[j] * (x_star - x[j]) * (x_star - x[j]) * (x_star - x[j]));
-    }
-    std::cout << "x_ext: ";
-    for (const auto& val : x_ext) std::cout << val << " ";
-    std::cout << std::endl;
-    for (int i = 0; i < x_ext.size(); ++i) {
-        std::cout << x_ext[i] << " " << splines[i] << std::endl;
-    }
-    return 0;
 }
-
-

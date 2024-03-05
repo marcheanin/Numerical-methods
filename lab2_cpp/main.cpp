@@ -43,7 +43,7 @@ std::tuple <std::vector<double>, std::vector<double>, std::vector<double> > find
 }
 
 int main() {
-    int n = 31;
+    int n = 10;
 
     std::vector <double> x, y;
 
@@ -104,12 +104,10 @@ int main() {
     for (int i = 0; i < x_ext.size(); ++i) {
         std::cout << std::fixed << std::setprecision(6) << x_ext[i] << "\t" << splines[i];
         if (i % 2 == 0) {
-            // std::cout << std::fixed << std::setprecision(6) << "\t" << y[j] << "\t" << std::abs(splines[i] - y[j]) << "\t -- node";
             std::cout << "\t" << func(x_ext[i]) << "\t" << std::abs(splines[i] - func(x_ext[i])) << "\t -- node";
             j++;
         }
         else {
-            // std::cout << std::fixed << std::setprecision(6) << "\t" << func(x_ext[i]) << "\t" << std::abs(splines[i] - y[j]);
             std::cout << "\t" << func(x_ext[i]) << "\t" << std::abs(splines[i] - func(x_ext[i]));
 
         }
@@ -117,5 +115,3 @@ int main() {
     }
     return 0;
 }
-
-

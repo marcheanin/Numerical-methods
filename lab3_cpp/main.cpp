@@ -63,15 +63,6 @@ int main() {
     vector_n.push_back(n);
     vector_Ih2.push_back(Ih2);
     vector_R.push_back(error);
-//    std::cout   << "Rectangle method: " << std::endl
-//                << "n: " << n << std::endl
-//                << "I(h/2): " <<  Ih2 << std::endl
-//                << "R: " << error << std::endl
-//                << "I(h/2) + R: " << Ih2 + error << std::endl
-//                << "Expected value: " << exact_value << std::endl;
-//
-//
-//    std::cout << std::endl;
 
     error = 1000;
     n = 1;
@@ -85,15 +76,6 @@ int main() {
     vector_n.push_back(n);
     vector_Ih2.push_back(Ih2);
     vector_R.push_back(error);
-//    std::cout   << "Trapezoid method: " << std::endl
-//                << "n: " << n << std::endl
-//                << "I(h/2): " <<  Ih2 << std::endl
-//                << "R: " << error << std::endl
-//                << "I(h/2) + R: " << Ih2 + error << std::endl
-//                << "Expected value: " << exact_value << std::endl;
-//
-//
-//    std::cout << std::endl;
 
     error = 1000;
     n = 1;
@@ -104,12 +86,7 @@ int main() {
         Ih = simpson_method(a, b, n);
         error = richardson(Ih, Ih2, 4);
     }
-//    std::cout   << "Simpson method: " << std::endl
-//                << "n: " << n << std::endl
-//                << "I(h/2): " <<  Ih2 << std::endl
-//                << "R: " << error << std::endl
-//                << "I(h/2) + R: " << Ih2 + error << std::endl
-//                << "Expected value: " << exact_value << std::endl;
+
     vector_n.push_back(n);
     vector_Ih2.push_back(Ih2);
     vector_R.push_back(error);
@@ -125,17 +102,17 @@ int main() {
     for (int i = 0; i < vector_Ih2.size(); i++) {
         std::cout << std::setw(width) << vector_Ih2[i];
     }
-    std::cout << std::endl << "R: ";
+    std::cout << std::endl << "R:   ";
     for (int i = 0; i < vector_R.size(); i++) {
         std::cout << std::setw(width) << vector_R[i];
     }
     std::cout << std::endl << "I(h/2) + R: ";
     for (int i = 0; i < vector_R.size(); i++) {
-        std::cout << std::setw(width) << vector_R[i] + vector_Ih2[i];
+        std::cout << std::setw(width - 5) << vector_R[i] + vector_Ih2[i];
     }
     std::cout << std::endl << "Expected: ";
     for (int i = 0; i < vector_n.size(); i++) {
-        std::cout << std::setw(width) << exact_value;
+        std::cout << std::setw(width - 5) << exact_value;
     }
 
 }

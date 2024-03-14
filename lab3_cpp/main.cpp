@@ -95,16 +95,16 @@ int main() {
 
     std::cout << '\t' <<  std::setw(width) << "Rectangle method" << '\t' << "Trapezoid method" << '\t' << "Simpson method" << std::endl;
     std::cout << "n: ";
-    for (int i = 0; i < vector_n.size(); i++) {
-        std::cout <<  std::setw(width) << vector_n[i];
+    for (int i : vector_n) {
+        std::cout <<  std::setw(width) << i;
     }
     std::cout << std::endl << "I(h/2): ";
-    for (int i = 0; i < vector_Ih2.size(); i++) {
-        std::cout << std::setw(width) << vector_Ih2[i];
+    for (double i : vector_Ih2) {
+        std::cout << std::setw(width) << i;
     }
     std::cout << std::endl << "R:   ";
-    for (int i = 0; i < vector_R.size(); i++) {
-        std::cout << std::setw(width) << vector_R[i];
+    for (double i : vector_R) {
+        std::cout << std::setw(width) << i;
     }
     std::cout << std::endl << "I(h/2) + R: ";
     for (int i = 0; i < vector_R.size(); i++) {

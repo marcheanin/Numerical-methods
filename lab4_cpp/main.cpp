@@ -5,22 +5,12 @@
 #include <Eigen/LU>
 #include <iomanip>
 
-using namespace Eigen;
-using namespace std;
 
-//double f(double x) {
-//    return exp(x);
-//}
-
-//VectorXd find_lambd2(const MatrixXd& A, const VectorXd& b) {
-//    return A.inverse() * b;
-//}
-
-VectorXd find_lambd(const MatrixXd& A, const VectorXd& b) {
-    int m = A.rows();
-    MatrixXd U = MatrixXd::Zero(m, m);
-    VectorXd x = VectorXd::Zero(m);
-    VectorXd y = VectorXd::Zero(m);
+Eigen::VectorXd find_lambd(const Eigen::MatrixXd& A, const Eigen::VectorXd& b) {
+    auto m = A.rows();
+    Eigen::MatrixXd U = Eigen::MatrixXd::Zero(m, m);
+    Eigen::VectorXd x = Eigen::VectorXd::Zero(m);
+    Eigen::VectorXd y = Eigen::VectorXd::Zero(m);
 
     for (int i = 0; i < m; ++i) {
         for (int j = 0; j < i; ++j) {
@@ -68,13 +58,13 @@ int main() {
 
     int m = 4; // размерность системы
     int n = 8; // кол-во точек разбиения
-    vector <double> xs = {1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0};
-    vector <double> ys = {2.61, 1.62, 1.17, 0.75, 0.30, 0.75, 1.03, 0.81, 0.57}; // данные 17 варианта
+    std::vector <double> xs = {1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0};
+    std::vector <double> ys = {2.61, 1.62, 1.17, 0.75, 0.30, 0.75, 1.03, 0.81, 0.57}; // данные 17 варианта
 
 
     // заполняем матрицу А и свободные коэффы b по формулам:
-    MatrixXd A(m, m);
-    VectorXd b(m);
+    Eigen::MatrixXd A(m, m);
+    Eigen::VectorXd b(m);
     for (int i = 0; i < m; ++i) {
         for (int j = 0; j < m; ++j) {
             A(i, j) = 0;
@@ -88,10 +78,10 @@ int main() {
         }
     }
 
-    cout << "\nA:\n" << A << endl;
-    cout << "\nb:\n" << b.transpose() << endl;
-    VectorXd lambd = find_lambd(A, b);
-    cout << "\nλ:\n" << lambd.transpose() << endl;
+    std::cout << "\nA:\n" << A << std::endl;
+    std::cout << "\nb:\n" << b.transpose() << std::endl;
+    Eigen::VectorXd lambd = find_lambd(A, b);
+    std::cout << "\nλ:\n" << lambd.transpose() << std::endl;
 
     // задаём функцию z(x) согласно найденным лямбдам
     auto z = [&lambd, m](double x) {
@@ -108,7 +98,7 @@ int main() {
         D += pow(ys[k] - z(xs[k]), 2);
     }
     D = sqrt(D) / sqrt(n);
-    cout << "\nСКО: " << D << endl;
+    std::cout << "\nСКО: " << D << std::endl;
 
     // считаем относительную ошибку
     double d = 0;
@@ -116,15 +106,15 @@ int main() {
         d += pow(ys[k], 2);
     }
     d = D / sqrt(d);
-    cout << fixed << setprecision(4);
-    cout << "\nотносительная погрешность: " << d << endl;
+    std::cout << std::fixed << std::setprecision(4);
+    std::cout << "\nотносительная погрешность: " << d << std::endl;
 
-    cout << "\n|    x    |   f(x)   |   z(x)   | |f - z|  |\n";
-    cout << "|---------|----------|----------|----------|\n";
+    std::cout << "\n|    x    |   f(x)   |   z(x)   | |f - z|  |\n";
+    std::cout << "|---------|----------|----------|----------|\n";
     for (int k = 0; k <= n; k++) {
-        cout << "| " << setw(7) << xs[k] << " | " << setw(8) << ys[k] << " | " << setw(8) << z(xs[k]) << " | " << setw(8) << abs(ys[k] - z(xs[k])) << " |\n";
+        std::cout << "| " << std::setw(7) << xs[k] << " | " << std::setw(8) << ys[k] << " | " << std::setw(8) << z(xs[k]) << " | " << std::setw(8) << abs(ys[k] - z(xs[k])) << " |\n";
         if (k != n) { // в серединах еще посчитал z(x)
-            cout << "| " << setw(7) << xs[k] + 0.25 << " | " << setw(8) << "----" << " | " << setw(8) << z(xs[k] + 0.25) << " | " << setw(8) << "----" << " |\n";
+            std::cout << "| " << std::setw(7) << xs[k] + 0.25 << " | " << std::setw(8) << "----" << " | " << std::setw(8) << z(xs[k] + 0.25) << " | " << std::setw(8) << "----" << " |\n";
         }
     }
 

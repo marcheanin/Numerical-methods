@@ -18,7 +18,7 @@ using namespace std;
 
 VectorXd find_lambd(const MatrixXd& A, const VectorXd& b) {
     int m = A.rows();
-    MatrixXd T = MatrixXd::Zero(m, m);
+    MatrixXd U = MatrixXd::Zero(m, m);
     VectorXd x = VectorXd::Zero(m);
     VectorXd y = VectorXd::Zero(m);
 
@@ -26,32 +26,32 @@ VectorXd find_lambd(const MatrixXd& A, const VectorXd& b) {
         for (int j = 0; j < i; ++j) {
             double sum = 0.0;
             for (int k = 0; k < j; ++k) {
-                sum += T(i, k) * T(j, k);
+                sum += U(i, k) * U(j, k);
             }
-            T(i, j) = (A(i, j) - sum) / T(j, j);
+            U(i, j) = (A(i, j) - sum) / U(j, j);
         }
 
         // прямой ход
         double sum = 0.0;
         for (int k = 0; k < i; ++k) {
-            sum += pow(T(i, k), 2);
+            sum += pow(U(i, k), 2);
         }
-        T(i, i) = sqrt(A(i, i) - sum);
+        U(i, i) = sqrt(A(i, i) - sum);
 
         // обратный ход
         double sum_y = 0.0;
         for (int k = 0; k < i; ++k) {
-            sum_y += T(i, k) * y(k);
+            sum_y += U(i, k) * y(k);
         }
-        y(i) = (b(i) - sum_y) / T(i, i);
+        y(i) = (b(i) - sum_y) / U(i, i);
     }
 
     for (int i = m - 1; i >= 0; --i) {
         double sum_x = 0.0;
         for (int k = i + 1; k < m; ++k) {
-            sum_x += T(k, i) * x(k);
+            sum_x += U(k, i) * x(k);
         }
-        x(i) = (y(i) - sum_x) / T(i, i);
+        x(i) = (y(i) - sum_x) / U(i, i);
     }
     return x;
 }
@@ -108,7 +108,7 @@ int main() {
         D += pow(ys[k] - z(xs[k]), 2);
     }
     D = sqrt(D) / sqrt(n);
-    cout << "\nСКО Δ: " << D << endl;
+    cout << "\nСКО: " << D << endl;
 
     // считаем относительную ошибку
     double d = 0;
@@ -117,13 +117,13 @@ int main() {
     }
     d = D / sqrt(d);
     cout << fixed << setprecision(4);
-    cout << "\nотн. погрешность δ: " << d << endl;
+    cout << "\nотносительная погрешность: " << d << endl;
 
     cout << "\n|    x    |   f(x)   |   z(x)   | |f - z|  |\n";
     cout << "|---------|----------|----------|----------|\n";
     for (int k = 0; k <= n; k++) {
         cout << "| " << setw(7) << xs[k] << " | " << setw(8) << ys[k] << " | " << setw(8) << z(xs[k]) << " | " << setw(8) << abs(ys[k] - z(xs[k])) << " |\n";
-        if (k != n) {
+        if (k != n) { // в серединах еще посчитал z(x)
             cout << "| " << setw(7) << xs[k] + 0.25 << " | " << setw(8) << "----" << " | " << setw(8) << z(xs[k] + 0.25) << " | " << setw(8) << "----" << " |\n";
         }
     }

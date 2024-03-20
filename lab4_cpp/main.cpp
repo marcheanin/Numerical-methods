@@ -5,8 +5,19 @@
 #include <Eigen/LU>
 #include <iomanip>
 
+using namespace Eigen;
 
-Eigen::VectorXd find_lambd(const Eigen::MatrixXd& A, const Eigen::VectorXd& b) {
+double Z(double x, const VectorXd& lambd, int l) {
+    double sum = 0;
+    for (int i = 0; i < l; ++i) {
+        sum += lambd(i) * pow(x, i);
+    }
+    return sum;
+}
+
+std::vector <std::vector <int> > funcs = {{1, 3, 6}, {4, 2, 9}, {5, 8, 7}};
+
+Eigen::VectorXd findLambd(const Eigen::MatrixXd& A, const Eigen::VectorXd& b) {
     auto m = A.rows();
     Eigen::MatrixXd U = Eigen::MatrixXd::Zero(m, m);
     Eigen::VectorXd x = Eigen::VectorXd::Zero(m);
@@ -46,15 +57,58 @@ Eigen::VectorXd find_lambd(const Eigen::MatrixXd& A, const Eigen::VectorXd& b) {
     return x;
 }
 
+double avg(double x1, double x2) {
+    return (x1 + x2) / 2;
+}
+
+double geom(double x1, double x2) {
+    return sqrt(x1 * x2);
+}
+
+double harm(double x1, double x2) {
+    return 2 / (1 / x1 + 1 / x2);
+}
+
+int findK(std::vector <double> xs, std::vector <double> ys, const std::function<double(double)>& z) {
+    double x_first = xs[0], x_last = xs[xs.size()-1];
+    double y_first = ys[0], y_last = ys[ys.size()-1];
+    std::vector <double> funcs_x = {avg(x_first, x_last),   // x_a
+                                    geom(x_first, x_last),  // x_g
+                                    harm(x_first, x_last)}; // x_h
+    std::vector <double> funcs_y = {avg(y_first, y_last),   // y_a
+                                    geom(y_first, y_last),  // y_g
+                                    harm(y_first, y_last)}; // y_h
+    double min = abs(z(funcs_x[0]) - funcs_y[0]);
+    int min_x = 0, min_y = 0;
+    for (int i = 0; i < funcs_x.size(); i++) {
+        for (int j = 0; j < funcs_y.size(); j++) {
+            if (std::abs(z(funcs_x[i]) - z(funcs_y[j])) < min) {
+                min = std::abs(z(funcs_x[i]) - z(funcs_y[j]));
+                min_x = i;
+                min_y = j;
+            }
+        }
+    }
+    return funcs[min_x][min_y];
+}
+
+void fillAb (MatrixXd & A, MatrixXd & b, int m, std::vector <double> xs, std::vector <double> ys, int n) {
+    for (int i = 0; i < m; ++i) {
+        for (int j = 0; j < m; ++j) {
+            A(i, j) = 0;
+            for (int k = 0; k <= n; ++k) {
+                A(i, j) += pow(xs[k], i + j);
+            }
+        }
+        b(i) = 0;
+        for (int k = 0; k <= n; ++k) {
+            b(i) += ys[k] * pow(xs[k], i);
+        }
+    }
+}
+
+
 int main() {
-//    double l = 0, r = 1;
-//    int m = 4, n = 10;
-//    double h = (r - l) / n;
-//    vector<double> xs(n + 1), ys(n + 1);
-//    for (int i = 0; i <= n; ++i) {
-//        xs[i] = l + i * h;
-//        ys[i] = f(xs[i]);
-//    }
 
     int m = 4; // размерность системы
     int n = 8; // кол-во точек разбиения
@@ -65,6 +119,7 @@ int main() {
     // заполняем матрицу А и свободные коэффы b по формулам:
     Eigen::MatrixXd A(m, m);
     Eigen::VectorXd b(m);
+
     for (int i = 0; i < m; ++i) {
         for (int j = 0; j < m; ++j) {
             A(i, j) = 0;
@@ -80,7 +135,7 @@ int main() {
 
     std::cout << "\nA:\n" << A << std::endl;
     std::cout << "\nb:\n" << b.transpose() << std::endl;
-    Eigen::VectorXd lambd = find_lambd(A, b);
+    Eigen::VectorXd lambd = findLambd(A, b);
     std::cout << "\nλ:\n" << lambd.transpose() << std::endl;
 
     // задаём функцию z(x) согласно найденным лямбдам
@@ -92,11 +147,47 @@ int main() {
         return result;
     };
 
+    std::cout << "k: " << findK(xs, ys, z) << std::endl; // результат - 5
+
+
+
+    Eigen::MatrixXd A_new(2, 2);
+    Eigen::VectorXd b_new(2);
+
+    std::vector <double> xs_rev (xs.size());
+    for (int i = 0; i < xs.size(); i++) {
+        xs_rev[i] = 1 / xs[i];
+    }
+
+    for (int i = 0; i < 2; ++i) {
+        for (int j = 0; j < 2; ++j) {
+            A_new(i, j) = 0;
+            for (int k = 0; k <= n; ++k) {
+                A_new(i, j) += pow(xs_rev[k], i + j);
+            }
+        }
+        b_new(i) = 0;
+        for (int k = 0; k <= n; ++k) {
+            b_new(i) += ys[k] * pow(xs_rev[k], i);
+        }
+    }
+
+
+
+    VectorXd new_lambd = findLambd(A_new, b_new);
+
+    std::cout << "New lambd: " << new_lambd.transpose();
+    auto z_new = [&new_lambd](double x) {
+        return new_lambd[0] / x + new_lambd[1];
+    };
+
     // считаем абсолютную погрешность аппроксимации
     double D = 0;
     for (int k = 0; k <= m; ++k) {
-        D += pow(ys[k] - z(xs[k]), 2);
+        D += pow(ys[k] - z_new(xs[k]), 2);
     }
+
+
     D = sqrt(D) / sqrt(n);
     std::cout << "\nСКО: " << D << std::endl;
 
@@ -108,15 +199,6 @@ int main() {
     d = D / sqrt(d);
     std::cout << std::fixed << std::setprecision(4);
     std::cout << "\nотносительная погрешность: " << d << std::endl;
-
-    std::cout << "\n|    x    |   f(x)   |   z(x)   | |f - z|  |\n";
-    std::cout << "|---------|----------|----------|----------|\n";
-    for (int k = 0; k <= n; k++) {
-        std::cout << "| " << std::setw(7) << xs[k] << " | " << std::setw(8) << ys[k] << " | " << std::setw(8) << z(xs[k]) << " | " << std::setw(8) << abs(ys[k] - z(xs[k])) << " |\n";
-        if (k != n) { // в серединах еще посчитал z(x)
-            std::cout << "| " << std::setw(7) << xs[k] + 0.25 << " | " << std::setw(8) << "----" << " | " << std::setw(8) << z(xs[k] + 0.25) << " | " << std::setw(8) << "----" << " |\n";
-        }
-    }
 
     return 0;
 }

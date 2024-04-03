@@ -7,14 +7,6 @@
 
 using namespace Eigen;
 
-double Z(double x, const VectorXd& lambd, int l) {
-    double sum = 0;
-    for (int i = 0; i < l; ++i) {
-        sum += lambd(i) * pow(x, i);
-    }
-    return sum;
-}
-
 std::vector <std::vector <int> > funcs = {{1, 3, 6}, {4, 2, 9}, {5, 8, 7}};
 
 Eigen::VectorXd findLambd(const Eigen::MatrixXd& A, const Eigen::VectorXd& b) {
@@ -172,11 +164,9 @@ int main() {
         }
     }
 
-
-
     VectorXd new_lambd = findLambd(A_new, b_new);
 
-    std::cout << "New lambd: " << new_lambd.transpose();
+    std::cout << "New lambd: " <<  std::endl <<  new_lambd.transpose();
     auto z_new = [&new_lambd](double x) {
         return new_lambd[0] / x + new_lambd[1];
     };
@@ -191,7 +181,7 @@ int main() {
     D = sqrt(D) / sqrt(n);
     std::cout << "\nСКО: " << D << std::endl;
 
-    // считаем относительную ошибку
+    // считаем относительню ошибку
     double d = 0;
     for (int k = 0; k <= n; ++k) {
         d += pow(ys[k], 2);

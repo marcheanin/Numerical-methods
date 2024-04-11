@@ -79,10 +79,10 @@ int main() {
         max_err = std::max(delta[i], max_err);
     }
     std::cout << "Max error:" << '\t' << max_err << std::endl;
-    std::cout  << std::fixed << std::setprecision(6) << "Method's res" << '\t' << "Analytical res" << '\t' << "Delta" << std::endl;
+    std::cout  << std::fixed << std::setprecision(6) << "x\t\t" << "Analytical res" << '\t' << "Method's res" << '\t' << "Delta" << std::endl;
 
     for (int i = 0; i < delta.size(); i++) {
-        std::cout << y_ev_arr[i] << "\t" << y_true_arr[i] << "\t" << delta[i] << std::endl;
+        std::cout << x_arr[i] << "\t" << y_true_arr[i] << "\t" << y_ev_arr[i] << "\t" << delta[i] << std::endl;
     }
     std::cout << std::endl;
     return 0;

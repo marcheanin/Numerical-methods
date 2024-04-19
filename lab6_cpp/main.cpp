@@ -27,21 +27,23 @@ double df_dydy(double x, double y) {
 }
 
 double fi_first(double x, double y) {
-    return -std::pow(df_dx(x, y), 2) - std::pow(df_dy(x,y), 2);
+    return - std::pow(df_dx(x, y), 2) - std::pow(df_dy(x,y), 2);
 }
 
 double fi_second(double x, double y) {
-    return df_dxdx(x, y) + std::pow(df_dx(x, y), 2) +
+    return df_dxdx(x, y) * std::pow(df_dx(x, y), 2) +
                     2 * df_dxdy(x, y) * df_dx(x, y) * df_dy(x, y) +
                     df_dydy(x, y) * std::pow(df_dy(x, y), 2);
 }
 
 int main() {
-    double eps = 0.005;
+    double eps = 0.001 ;
     double x_k = -1, y_k = 0; // начальные значения
     double x_check = -1.011, y_check = 0.07;
     double fi1, fi2, t, error = 100;
+    int n = 0;
     while (error > eps) {
+        n++;
         fi1 = fi_first(x_k, y_k);
         fi2 = fi_second(x_k, y_k);
         t = - fi1 / fi2;
@@ -50,7 +52,9 @@ int main() {
         error = std::max(std::abs(df_dx(x_k, y_k)), std::abs(df_dy(x_k, y_k)));
         std::cout << x_k << " " << y_k  << " " << error << std::endl;
     }
-    std::cout << x_k << " " << y_k << std::endl;
-    std::cout << x_check << " " << y_check;
+    std::cout << "Iterations: " << n << std::endl;
+    std::cout << "Result: " << f(x_k, y_k) << std::endl;
+    std::cout << "Analytical: " << f(x_check, y_check) << y_check << std::endl;
+    std::cout << "Diff: " << std::abs(f(x_k, y_k) - f(x_check, y_check));
     return 0;
 }
